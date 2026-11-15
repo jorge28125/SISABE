@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SISABE | Vapers, Granizados, Micheladas y Cervezas</title>
+  <meta name="description" content="La mejor tienda de vapers, granizados, micheladas y cervezas. Stock en tiempo real y contabilidad integrada."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Three.js para efectos 3D -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- =========================
+       AUDIO AMBIENTE (opcional)
+       ========================= -->
+  <audio id="ambientAudio" loop>
+    <source src="assets/audio/ambient.mp3" type="audio/mpeg" />
+  </audio>
+  <button id="audioBtn" class="audio-toggle" aria-label="Activar sonido">🔊</button>
+
+  <!-- =========================
+       SCENE 3D (fondo hero)
+       ========================= -->
+  <div id="canvas-container"></div>
+
+  <!-- =========================
+       NAVEGACIÓN
+       ========================= -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-container">
+      <div class="logo" onclick="app.scrollToHome()">
+        <div class="logo-mark">S</div>
+        <div class="logo-text">SISABE</div>
+        <div class="logo-tag">VAPERS • GRANIZADOS • MICHELADAS • CERVEZAS</div>
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="#inicio" class="nav-link active">Inicio</a></li>
+        <li><a href="#catalogo" class="nav-link">Catálogo</a></li>
+        <li><a href="#stock" class="nav-link">Stock</a></li>
+        <li><a href="#contabilidad" class="nav-link">Contabilidad</a></li>
+        <li><a href="#carrito" class="nav-link nav-cart">
+          🛒 Carrito <span id="cartCount">0</span>
+        </a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="nav-btn" id="themeToggle">🌙</button>
+        <button class="nav-btn hamburger" id="hamburger" aria-label="Menú">☰</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- =========================
+       HERO / INICIO
+       ========================= -->
+  <header id="inicio" class="hero">
+    <div class="hero-content">
+      <span class="hero-badge">NUEVO: CATÁLOGO 3D INTERACTIVO</span>
+      <h1>SISABE</h1>
+      <p>Vapers • Granizados • Micheladas • Cervezas</p>
+      <p class="hero-sub">El mejor sabor de la ciudad, con stock siempre visible y contabilidad al instante.</p>
+
+      <div class="hero-cta">
+        <button class="btn btn-primary" onclick="app.scrollToCatalogo()">Ver Catálogo</button>
+        <button class="btn btn-outline" onclick="app.scrollToStock()">Ver Stock en Tiempo Real</button>
+      </div>
+
+      <!-- Cara del cantante Blesd -->
+      <div class="blesd-card">
+        <div class="blesd-glow"></div>
+        <img id="blesdImg" src="assets/images/blesd.jpg" alt="Blesd" class="blesd-img" onerror="this.style.display='none'; document.getElementById('blesdFallback').style.display='flex';" />
+        <div id="blesdFallback" class="blesd-fallback">
+          <div class="blesd-avatar">B</div>
+          <div class="blesd-name">BLESD</div>
+        </div>
+        <div class="blesd-label">Artista Invitado · SISABE</div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-number" id="statProducts">0</span>
+        <span class="stat-label">Productos</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number" id="statStock">0</span>
+        <span class="stat-label">Unidades en Stock</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number" id="statSales">$0</span>
+        <span class="stat-label">Ventas Hoy</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================
+       CATÁLOGO DIDÁCTICO
+       ========================= -->
+  <section id="catalogo" class="catalogo">
+    <div class="section-header">
+      <h2>Catálogo Didáctico</h2>
+      <p>Elige tu categoría y descubre cada producto con su descripción, precio y stock.</p>
+    </div>
+
+    <div class="category-filters">
+      <button class="filter-btn active" data-category="todos">Todos</button>
+      <button class="filter-btn" data-category="vapers">💨 Vapers</button>
+      <button class="filter-btn" data-category="granizados">🧊 Granizados</button>
+      <button class="filter-btn" data-category="micheladas">🍋 Micheladas</button>
+      <button class="filter-btn" data-category="cervezas">🍺 Cervezas</button>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+      <!-- Productos inyectados por JS -->
+    </div>
+
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <p>No se encontraron productos en esta categoría.</p>
+    </div>
+  </section>
+
+  <!-- =========================
+       STOCK SIEMPRE VISIBLE
+       ========================= -->
+  <section id="stock" class="stock">
+    <div class="section-header">
+      <h2>Stock en Tiempo Real</h2>
+      <p>Controla el inventario de tu negocio al instante.</p>
+    </div>
+
+    <div class="stock-controls">
+      <input type="text" id="stockSearch" placeholder="Buscar producto..." />
+      <select id="stockFilter">
+        <option value="todos">Todos los productos</option>
+        <option value="bajo">Stock bajo (&lt; 5)</option>
+        <option value="disponible">Disponible</option>
+        <option value="agotado">Agotado</option>
+      </select>
+    </div>
+
+    <div class="stock-table-wrap">
+      <table class="stock-table">
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Stock Actual</th>
+            <th>Stock Mínimo</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody id="stockBody">
+          <!-- Inyectado por JS -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="stock-summary">
+      <div class="summary-card total">
+        <span class="label">Total productos</span>
+        <span class="value" id="summaryTotal">0</span>
+      </div>
+      <div class="summary-card unidades">
+        <span class="label">Unidades totales</span>
+        <span class="value" id="summaryUnits">0</span>
+      </div>
+      <div class="summary-card bajo">
+        <span class="label">Stock bajo</span>
+        <span class="value" id="summaryLow">0</span>
+      </div>
+      <div class="summary-card valor">
+        <span class="label">Valor estimado inventario</span>
+        <span class="value" id="summaryValue">$0</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================
+       CONTABILIDAD
+       ========================= -->
+  <section id="contabilidad" class="contabilidad">
+    <div class="section-header">
+      <h2>Contabilidad del Negocio</h2>
+      <p>Lleva el registro de ventas, ingresos y gastos de SISABE.</p>
+    </div>
+
+    <div class="accounting-kpis">
+      <div class="kpi-card ingresos">
+        <div class="kpi-label">Ingresos Totales</div>
+        <div class="kpi-value" id="kpiIngresos">$0</div>
+        <div class="kpi-trend positive">▲ Hoy: $0</div>
+      </div>
+      <div class="kpi-card gastos">
+        <div class="kpi-label">Gastos</div>
+        <div class="kpi-value" id="kpiGastos">$0</div>
+        <div class="kpi-trend negative">▼ Hoy: $0</div>
+      </div>
+      <div class="kpi-card utilidad">
+        <div class="kpi-label">Utilidad Neta</div>
+        <div class="kpi-value" id="kpiUtilidad">$0</div>
+        <div class="kpi-trend positive">Margen: 0%</div>
+      </div>
+      <div class="kpi-card transacciones">
+        <div class="kpi-label">Transacciones</div>
+        <div class="kpi-value" id="kpiTransacciones">0</div>
+        <div class="kpi-trend neutral">Ventas realizadas</div>
+      </div>
+    </div>
+
+    <div class="accounting-tools">
+      <div class="tool-panel registro-venta">
+        <h3>Registrar Venta</h3>
+        <div class="form-row">
+          <label>Producto</label>
+          <select id="ventaProducto"></select>
+        </div>
+        <div class="form-row">
+          <label>Cantidad</label>
+          <input type="number" id="ventaCantidad" min="1" value="1" />
+        </div>
+        <div class="form-row">
+          <label>Precio de venta</label>
+          <input type="number" id="ventaPrecio" min="0" step="0.01" placeholder="0.00" />
+        </div>
+        <div class="form-row">
+          <label>Método de pago</label>
+          <select id="ventaMetodo">
+            <option>Efectivo</option>
+            <option>Tarjeta</option>
+            <option>Transferencia</option>
+          </select>
+        </div>
+        <button class="btn btn-primary w-full" id="btnRegistrarVenta">Registrar Venta</button>
+      </div>
+
+      <div class="tool-panel registro-gasto">
+        <h3>Registrar Gasto</h3>
+        <div class="form-row">
+          <label>Concepto</label>
+          <input type="text" id="gastoConcepto" placeholder="Ej: Compra de insumos" />
+        </div>
+        <div class="form-row">
+          <label>Monto</label>
+          <input type="number" id="gastoMonto" min="0" step="0.01" placeholder="0.00" />
+        </div>
+        <div class="form-row">
+          <label>Categoría</label>
+          <select id="gastoCategoria">
+            <option>Insumos</option>
+            <option>Servicios</option>
+            <option>Marketing</option>
+            <option>Otros</option>
+          </select>
+        </div>
+        <button class="btn btn-outline w-full" id="btnRegistrarGasto">Registrar Gasto</button>
+      </div>
+    </div>
+
+    <div class="historial-ventas">
+      <h3>Historial Reciente</h3>
+      <table class="historial-table">
+        <thead>
+          <tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Total</th><th>Método</th></tr>
+        </thead>
+        <tbody id="historialBody">
+          <!-- Inyectado por JS -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- =========================
+       CARRITO (lateral)
+       ========================= -->
+  <div class="cart-sidebar" id="cartSidebar">
+    <div class="cart-header">
+      <h3>🛒 Tu Carrito</h3>
+      <button class="btn-close" id="btnCloseCart" aria-label="Cerrar carrito">✕</button>
+    </div>
+    <div class="cart-items" id="cartItems">
+      <!-- Items inyectados -->
+    </div>
+    <div class="cart-footer">
+      <div class="cart-totals">
+        <div><span>Subtotal</span><span id="cartSubtotal">$0</span></div>
+        <div><span>Envío</span><span id="cartShipping">Gratis</span></div>
+        <div class="total"><span>TOTAL</span><span id="cartTotal">$0</span></div>
+      </div>
+      <button class="btn btn-primary w-full" id="btnCheckout">Finalizar Compra</button>
+    </div>
+  </div>
+  <div class="cart-overlay" id="cartOverlay" onclick="app.closeCart()"></div>
+
+  <!-- =========================
+       MODAL DETALLE PRODUCTO
+       ========================= -->
+  <div class="modal" id="productModal">
+    <div class="modal-content">
+      <button class="modal-close" id="btnCloseModal" aria-label="Cerrar">✕</button>
+      <div class="modal-body">
+        <div class="modal-image" id="modalImage"></div>
+        <div class="modal-info">
+          <h2 id="modalTitle">Producto</h2>
+          <p class="modal-category" id="modalCategory">Categoría</p>
+          <p class="modal-description" id="modalDescription"></p>
+          <div class="modal-price" id="modalPrice">$0</div>
+          <div class="modal-stock" id="modalStock">Stock: 0</div>
+          <div class="modal-actions">
+            <label>Cantidad</label>
+            <input type="number" id="modalQty" min="1" max="99" value="1" />
+            <button class="btn btn-primary w-full" id="btnAddModal">Agregar al Carrito</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================
+       FOOTER
+       ========================= -->
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="logo-mark">S</div>
+        <div class="logo-text">SISABE</div>
+        <p>Vapers • Granizados • Micheladas • Cervezas</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram">📸</a>
+          <a href="#" aria-label="TikTok">⚡</a>
+          <a href="#" aria-label="WhatsApp">💬</a>
+        </div>
+      </div>
+      <div class="footer-links">
+        <h4>Enlaces</h4>
+        <a href="#inicio">Inicio</a>
+        <a href="#catalogo">Catálogo</a>
+        <a href="#stock">Stock</a>
+        <a href="#contabilidad">Contabilidad</a>
+      </div>
+      <div class="footer-contact">
+        <h4>Contacto</h4>
+        <p>📍 Tu ciudad, México</p>
+        <p>📞 WhatsApp: +52 1 000 000 0000</p>
+        <p>✉️ contacto@sisabe.com</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 SISABE. Hecho con ⚡ para ser el mejor de todos.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
