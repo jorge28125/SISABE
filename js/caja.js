@@ -39,7 +39,7 @@ function renderTicket() {
       <div class="caja-linea-top"><strong>${esc(p.nombre)}</strong><button class="caja-x" data-act="del" data-i="${i}" aria-label="Quitar">✕</button></div>
       <div class="caja-linea-bot">
         <div class="caja-qty">
-          <button data-act="menos" data-i="${i}">−</button><span>${l.qty}${p.unidad === 'ml' ? ' ml' : ''}</span><button data-act="mas" data-i="${i}" ${l.qty >= p.stock ? 'disabled' : ''}>+</button>
+          <button data-act="menos" data-i="${i}">−</button><input type="number" min="1" max="${p.stock}" value="${l.qty}" data-act="qty" data-i="${i}" class="caja-qty-input" />${p.unidad === 'ml' ? ' ml' : ''}<button data-act="mas" data-i="${i}" ${l.qty >= p.stock ? 'disabled' : ''}>+</button>
         </div>
         <label class="caja-precio-edit">$<input type="number" min="0" step="any" value="${l.precio}" data-act="precio" data-i="${i}" /></label>
         <span class="caja-subtotal">${money(l.qty * l.precio)}${p.unidad === 'ml' ? ' (' + l.qty + ' ml)' : ''}</span>
@@ -69,7 +69,7 @@ function render() { renderGrid(); renderTicket(); renderUltima(); }
 
 function add(id) {
   const p = prod(id); if (!p) return;
-  const step = p.unidad === 'ml' ? 10 : 1;
+  const step = p.unidad === 'ml' ? 1 : 1;
   const l = ticket.find((x) => x.id === id);
   if (l) { if (l.qty + step <= p.stock) l.qty += step; }
   else if (p.stock > 0) ticket.push({ id, qty: Math.min(step, p.stock), precio: p.precio });
@@ -146,17 +146,31 @@ $('cajaMetodos').addEventListener('click', (e) => {
 $('cajaLineas').addEventListener('click', (e) => {
   const b = e.target.closest('[data-act]'); if (!b || b.tagName === 'INPUT') return;
   const i = parseInt(b.dataset.i), l = ticket[i]; if (!l) return;
-  if (b.dataset.act === 'mas') { const p = prod(l.id); const step = p.unidad === 'ml' ? 10 : 1; if (l.qty + step <= p.stock) l.qty += step; }
-  else if (b.dataset.act === 'menos') { const p = prod(l.id); const step = p.unidad === 'ml' ? 10 : 1; l.qty -= step; if (l.qty < 1) ticket.splice(i, 1); }
+  if (b.dataset.act === 'mas') { const p = prod(l.id); const step = p.unidad === 'ml' ? 1 : 1; if (l.qty + step <= p.stock) l.qty += step; }
+  else if (b.dataset.act === 'menos') { const p = prod(l.id); const step = p.unidad === 'ml' ? 1 : 1; l.qty -= step; if (l.qty < 1) ticket.splice(i, 1); }
   else if (b.dataset.act === 'del') ticket.splice(i, 1);
   renderGrid(); renderTicket();
 });
 $('cajaLineas').addEventListener('change', (e) => {
-  if (e.target.dataset.act !== 'precio') return;
-  const l = ticket[parseInt(e.target.dataset.i)];
-  const v = parseFloat(e.target.value);
-  if (l && !isNaN(v) && v >= 0) l.precio = v;
-  renderTicket();
+  if (e.target.dataset.act === 'precio') {
+    const l = ticket[parseInt(e.target.dataset.i)];
+    const v = parseFloat(e.target.value);
+    if (l && !isNaN(v) && v >= 0) l.precio = v;
+    renderTicket();
+    return;
+  }
+  if (e.target.dataset.act === 'qty') {
+    const i = parseInt(e.target.dataset.i);
+    const l = ticket[i];
+    if (!l) return;
+    const p = prod(l.id);
+    let v = parseInt(e.target.value);
+    if (isNaN(v) || v < 1) v = 1;
+    if (v > p.stock) v = p.stock;
+    l.qty = v;
+    renderGrid();
+    renderTicket();
+  }
 });
 $('cajaRecibido').addEventListener('input', renderCambio);
 $('cajaCobrar').addEventListener('click', cobrar);
