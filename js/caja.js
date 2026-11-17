@@ -41,7 +41,7 @@ function renderTicket() {
         <div class="caja-qty">
           <button data-act="menos" data-i="${i}">−</button><input type="number" min="1" max="${p.stock}" value="${l.qty}" data-act="qty" data-i="${i}" class="caja-qty-input" />${p.unidad === 'ml' ? ' ml' : ''}<button data-act="mas" data-i="${i}" ${l.qty >= p.stock ? 'disabled' : ''}>+</button>
         </div>
-        <label class="caja-precio-edit">$<input type="number" min="0" step="any" value="${l.precio}" data-act="precio" data-i="${i}" /></label>
+        <label class="caja-precio-edit">$ <input type="number" min="0" step="1" value="${l.precio}" data-act="precio" data-i="${i}" placeholder="0" /></label>
         <span class="caja-subtotal">${money(l.qty * l.precio)}${p.unidad === 'ml' ? ' (' + l.qty + ' ml)' : ''}</span>
       </div>
     </div>`;
@@ -154,7 +154,7 @@ $('cajaLineas').addEventListener('click', (e) => {
 $('cajaLineas').addEventListener('change', (e) => {
   if (e.target.dataset.act === 'precio') {
     const l = ticket[parseInt(e.target.dataset.i)];
-    const v = parseFloat(e.target.value);
+    const v = parseInt(e.target.value);
     if (l && !isNaN(v) && v >= 0) l.precio = v;
     renderTicket();
     return;
