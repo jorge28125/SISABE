@@ -4,19 +4,20 @@
 // Al cobrar: resta el stock y suma la venta a Contabilidad.
 // =========================================
 const $ = (id) => document.getElementById(id);
+const getApp = () => window.app;
 const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 let ticket = [];        // [{ id, qty, precio }]
 let categoria = 'todos';
 let metodo = 'Efectivo';
 
-const money = (n) => app.fmtMoneda(n);
-const prod = (id) => app.productos.find((p) => p.id === id);
+const money = (n) => getApp().fmtMoneda(n);
+const prod = (id) => getApp().productos.find((p) => p.id === id);
 const total = () => ticket.reduce((a, l) => a + l.qty * l.precio, 0);
 
 function renderGrid() {
   const term = $('cajaBuscar').value.trim().toLowerCase();
-  const list = app.productos.filter((p) =>
+  const list = getApp().productos.filter((p) =>
     (categoria === 'todos' || p.categoria === categoria) && p.nombre.toLowerCase().includes(term));
   $('cajaGrid').innerHTML = list.map((p) => {
     const enTicket = (ticket.find((l) => l.id === p.id) || {}).qty || 0;
@@ -59,7 +60,7 @@ function renderCambio() {
 }
 
 function renderUltima() {
-  const v = app.contabilidad.ventas.slice(-1)[0];
+  const v = getApp().contabilidad.ventas.slice(-1)[0];
   $('cajaUltima').textContent = v ? `Última: ${money(v.total)} · ${v.metodo} · ${v.fecha}` : 'Aún no hay ventas.';
   $('cajaDeshacer').hidden = !v;
 }
@@ -95,34 +96,34 @@ function cobrar() {
     const p = prod(l.id); p.stock -= l.qty;
     return { id: p.id, nombre: p.nombre, qty: l.qty, precio: l.precio };
   });
-  app.contabilidad.ingresos += t;
-  app.contabilidad.ventas.push({ fecha: new Date().toLocaleString('es-MX'), items, total: t, metodo });
-  app.saveStock();
-  app.saveContabilidad();
-  app.renderStock();
-  app.renderProductos('todos');
+  getApp().contabilidad.ingresos += t;
+  getApp().contabilidad.ventas.push({ fecha: new Date().toLocaleString('es-MX'), items, total: t, metodo });
+  getApp().saveStock();
+  getApp().saveContabilidad();
+  getApp().renderStock();
+  getApp().renderProductos('todos');
   ticket = [];
   $('cajaRecibido').value = '';
   render();
-  app.showToast(cambio !== null ? `Venta ${money(t)} · Cambio ${money(cambio)}` : `Venta registrada: ${money(t)}`);
+  getApp().showToast(cambio !== null ? `Venta ${money(t)} · Cambio ${money(cambio)}` : `Venta registrada: ${money(t)}`);
 }
 
 function deshacer() {
-  const v = app.contabilidad.ventas.slice(-1)[0];
+  const v = getApp().contabilidad.ventas.slice(-1)[0];
   if (!v) return;
   if (!confirm(`¿Deshacer la última venta de ${money(v.total)}?\nSe devuelve el stock y se resta de Contabilidad.`)) return;
   v.items.forEach((i) => {
-    const p = i.id != null ? prod(i.id) : app.productos.find((x) => x.nombre === i.nombre);
+    const p = i.id != null ? prod(i.id) : getApp().productos.find((x) => x.nombre === i.nombre);
     if (p) p.stock += i.qty;
   });
-  app.contabilidad.ingresos -= v.total;
-  app.contabilidad.ventas.pop();
-  app.saveStock();
-  app.saveContabilidad();
-  app.renderStock();
-  app.renderProductos('todos');
+  getApp().contabilidad.ingresos -= v.total;
+  getApp().contabilidad.ventas.pop();
+  getApp().saveStock();
+  getApp().saveContabilidad();
+  getApp().renderStock();
+  getApp().renderProductos('todos');
   render();
-  app.showToast('Venta deshecha');
+  getApp().showToast('Venta deshecha');
 }
 
 // ---------- Eventos ----------

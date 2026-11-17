@@ -11,6 +11,7 @@
 // =========================================
 
 const $ = (id) => document.getElementById(id);
+const getApp = () => window.app;
 const panel = $('adminPanel');
 const login = $('adminLogin');
 const form = $('adminForm');
@@ -48,7 +49,7 @@ function showTab(name) {
   document.querySelectorAll('.admin-tab').forEach((b) => b.classList.toggle('active', b.dataset.tab === name));
   document.querySelectorAll('.admin-body [data-view]').forEach((v) => { v.hidden = v.dataset.view !== name; });
   if (name === 'caja' && window.caja) caja.render();
-  if (name === 'contabilidad' && window.app) app.renderContabilidad();
+  if (name === 'contabilidad' && window.app) getApp().renderContabilidad();
   if (name === 'cuenta') renderCuenta();
   panel.scrollTop = 0;
 }
@@ -61,7 +62,7 @@ function openPanel() {
   login.hidden = true;
   panel.hidden = false;
   document.body.style.overflow = 'hidden';
-  if (window.app && app.els && app.els.stockSearch) { app.renderStock(); app.renderContabilidad(); app.renderStats(); }
+  if (window.app && getApp().els && getApp().els.stockSearch) { getApp().renderStock(); getApp().renderContabilidad(); getApp().renderStats(); }
   showTab(currentTab);
 }
 
