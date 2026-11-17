@@ -11,7 +11,7 @@ const PRODUCTOS = [
     precio: 120,
     stock: 45,
     stockMinimo: 10,
-    imagen: null, // se usará placeholder con emoji
+    imagen: null,
     emoji: '💨',
     destacado: true,
   },
@@ -52,9 +52,89 @@ const PRODUCTOS = [
     destacado: true,
   },
 
-  // ---------- GRANIZADOS ----------
+  // ---------- ESENCIAS (vendidas por ML) ----------
   {
     id: 5,
+    nombre: 'Esencia de Vainilla',
+    categoria: 'esencias',
+    descripcion: 'Esencia de vainilla de alta calidad para vapers. Se vende por mililitro (ml). Precio por ml.',
+    precio: 3, // precio por ml
+    stock: 500, // stock en ml
+    stockMinimo: 50,
+    imagen: null,
+    emoji: '🍦',
+    destacado: true,
+    unidad: 'ml',
+  },
+  {
+    id: 6,
+    nombre: 'Esencia de Menta',
+    categoria: 'esencias',
+    descripcion: 'Esencia de menta fresca para vapers. Refrescante y natural. Se vende por mililitro (ml).',
+    precio: 2.5,
+    stock: 750,
+    stockMinimo: 75,
+    imagen: null,
+    emoji: '🌿',
+    destacado: false,
+    unidad: 'ml',
+  },
+  {
+    id: 7,
+    nombre: 'Esencia de Fresa',
+    categoria: 'esencias',
+    descripcion: 'Esencia dulce de fresa para vapers. Sabor intenso y natural. Se vende por mililitro (ml).',
+    precio: 3.5,
+    stock: 400,
+    stockMinimo: 40,
+    imagen: null,
+    emoji: '🍓',
+    destacado: true,
+    unidad: 'ml',
+  },
+  {
+    id: 8,
+    nombre: 'Esencia de Mango',
+    categoria: 'esencias',
+    descripcion: 'Esencia tropical de mango para vapers. Dulce y ácida. Se vende por mililitro (ml).',
+    precio: 3,
+    stock: 600,
+    stockMinimo: 60,
+    imagen: null,
+    emoji: '🥭',
+    destacado: false,
+    unidad: 'ml',
+  },
+  {
+    id: 9,
+    nombre: 'Esencia de Coco',
+    categoria: 'esencias',
+    descripcion: 'Esencia de coco cremosa para vapers. Sabor suave y tropical. Se vende por mililitro (ml).',
+    precio: 2.8,
+    stock: 350,
+    stockMinimo: 35,
+    imagen: null,
+    emoji: '🥥',
+    destacado: false,
+    unidad: 'ml',
+  },
+  {
+    id: 10,
+    nombre: 'Esencia de Sandía',
+    categoria: 'esencias',
+    descripcion: 'Esencia refrescante de sandía para vapers. Dulce y acuosa. Se vende por mililitro (ml).',
+    precio: 2.5,
+    stock: 450,
+    stockMinimo: 45,
+    imagen: null,
+    emoji: '🍉',
+    destacado: false,
+    unidad: 'ml',
+  },
+
+  // ---------- GRANIZADOS ----------
+  {
+    id: 11,
     nombre: 'Granizado de Fresa',
     categoria: 'granizados',
     descripcion: 'Granizado natural de fresa con hielo fino. Refrescante y dulce, perfecto para el calor.',
@@ -66,7 +146,7 @@ const PRODUCTOS = [
     destacado: false,
   },
   {
-    id: 6,
+    id: 12,
     nombre: 'Granizado de Mango con Chamoy',
     categoria: 'granizados',
     descripcion: 'Mango natural granulado con chamoy y chile en polvo. Dulce, picante y ácido.',
@@ -78,7 +158,7 @@ const PRODUCTOS = [
     destacado: true,
   },
   {
-    id: 7,
+    id: 13,
     nombre: 'Granizado de Limón',
     categoria: 'granizados',
     descripcion: 'Clásico granizado de limón natural. Ácido, refrescante y con toque de sal.',
@@ -90,7 +170,7 @@ const PRODUCTOS = [
     destacado: false,
   },
   {
-    id: 8,
+    id: 14,
     nombre: 'Granizado de Maracuyá',
     categoria: 'granizados',
     descripcion: 'Sabor tropical intenso de maracuyá. Dulce con un toque ácido característico.',
@@ -104,7 +184,7 @@ const PRODUCTOS = [
 
   // ---------- MICHELADAS ----------
   {
-    id: 9,
+    id: 15,
     nombre: 'Michelada Clásica',
     categoria: 'micheladas',
     descripcion: 'Cerveza bien fría con jugo de limón, salsa inglesa, salsa picante y sal de gusano.',
@@ -116,7 +196,7 @@ const PRODUCTOS = [
     destacado: false,
   },
   {
-    id: 10,
+    id: 16,
     nombre: 'Michelada Cubana',
     categoria: 'micheladas',
     descripcion: 'Con jugo de clamato, limón, salsa inglesa, tabasco y un toque de Maggi.',
@@ -128,7 +208,7 @@ const PRODUCTOS = [
     destacado: true,
   },
   {
-    id: 11,
+    id: 17,
     nombre: 'Michelada de Chamoy',
     categoria: 'micheladas',
     descripcion: 'Borde de chamoy, chile en polvo, limón y salsa picante. Dulce, picante y refrescante.',
@@ -140,7 +220,7 @@ const PRODUCTOS = [
     destacado: false,
   },
   {
-    id: 12,
+    id: 18,
     nombre: 'Michelada Preparada Especial',
     categoria: 'micheladas',
     descripcion: 'La completa: limón, salsas, sal, pepino, zanahoria y cacahuates japoneses dentro del vaso.',
@@ -154,7 +234,7 @@ const PRODUCTOS = [
 
   // ---------- CERVEZAS ----------
   {
-    id: 13,
+    id: 19,
     nombre: 'Cerveza Clara 6 Pack',
     categoria: 'cervezas',
     descripcion: 'Cerveza lager ligera y refrescante. Pack de 6 latas de 355ml bien frías.',
@@ -166,7 +246,7 @@ const PRODUCTOS = [
     destacado: false,
   },
   {
-    id: 14,
+    id: 20,
     nombre: 'Cerveza Oscura 6 Pack',
     categoria: 'cervezas',
     descripcion: 'Cerveza tipo dunkel, cuerpo medio, notas a caramelo y malta tostada.',
@@ -178,7 +258,7 @@ const PRODUCTOS = [
     destacado: false,
   },
   {
-    id: 15,
+    id: 21,
     nombre: 'Cerveza Artesanal IPA',
     categoria: 'cervezas',
     descripcion: 'India Pale Ale con lúpulos cítricos. Amargor equilibrado y aroma frutal.',
@@ -190,7 +270,7 @@ const PRODUCTOS = [
     destacado: true,
   },
   {
-    id: 16,
+    id: 22,
     nombre: 'Michelada Cervecera Familiar',
     categoria: 'cervezas',
     descripcion: 'Cerveza de 1 litro lista para preparar michelada. Viene con su salsa y limón aparte.',
