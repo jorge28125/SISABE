@@ -4,23 +4,32 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SISABE | Vapers, Granizados, Micheladas y Cervezas</title>
-  <meta name="description" content="La mejor tienda de vapers, granizados, micheladas y cervezas. Stock en tiempo real y contabilidad integrada."/>
+  <meta name="description" content="La mejor tienda de vapers, granizados, micheladas y cervezas en Montería. Pide por WhatsApp."/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Three.js para efectos 3D -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
+  <!-- =========================
+       AUDIO AMBIENTE (opcional)
+       ========================= -->
   <audio id="ambientAudio" loop>
     <source src="assets/audio/ambient.mp3" type="audio/mpeg" />
   </audio>
   <button id="audioBtn" class="audio-toggle" aria-label="Activar sonido">🔊</button>
 
+  <!-- =========================
+       SCENE 3D (fondo hero)
+       ========================= -->
   <div id="canvas-container"></div>
 
-  <!-- NAVEGACIÓN -->
+  <!-- =========================
+       NAVEGACIÓN
+       ========================= -->
   <nav class="navbar" id="navbar">
     <div class="nav-container">
       <div class="logo" onclick="app.scrollToHome()">
@@ -32,61 +41,49 @@
       <ul class="nav-links">
         <li><a href="#inicio" class="nav-link active">Inicio</a></li>
         <li><a href="#catalogo" class="nav-link">Catálogo</a></li>
-        <li><a href="#stock" class="nav-link">Stock</a></li>
-        <li><a href="#contabilidad" class="nav-link" data-auth="admin">Contabilidad</a></li>
-        <li><a href="#carrito" class="nav-link nav-cart">🛒 Carrito <span id="cartCount">0</span></a></li>
+        <li class="nav-extra"><a href="https://wa.me/573137168007?text=Hola%20SISABE" target="_blank" rel="noopener" class="nav-link">💬 WhatsApp</a></li>
+        <li class="nav-extra"><a href="#admin" class="nav-link">🔒 Admin</a></li>
       </ul>
 
       <div class="nav-actions">
         <button class="nav-btn" id="themeToggle">🌙</button>
-        <button class="nav-btn" id="authBtn" onclick="app.toggleAuth()">👤 Iniciar Sesión</button>
-        <button class="nav-btn hamburger" id="hamburger" aria-label="Menú">☰</button>
+        <button class="nav-btn hamburger" id="hamburger" aria-label="Menú" aria-expanded="false">☰</button>
       </div>
     </div>
   </nav>
 
-  <!-- HERO / INICIO -->
+  <!-- =========================
+       HERO / INICIO
+       ========================= -->
   <header id="inicio" class="hero">
     <div class="hero-content">
-      <span class="hero-badge">EXPERIENCIA 3D • STOCK EN TIEMPO REAL • CONTABILIDAD</span>
+      <span class="hero-badge">NUEVO: CATÁLOGO 3D INTERACTIVO</span>
       <h1>SISABE</h1>
       <p>Vapers • Granizados • Micheladas • Cervezas</p>
-      <p class="hero-sub">El mejor sabor de la ciudad, con stock siempre visible y contabilidad al instante.</p>
+      <p class="hero-sub">El mejor sabor de la ciudad. Elige tu favorito y pídelo por WhatsApp.</p>
 
       <div class="hero-cta">
         <button class="btn btn-primary" onclick="app.scrollToCatalogo()">Ver Catálogo</button>
-        <button class="btn btn-outline" onclick="app.scrollToStock()">Ver Stock en Tiempo Real</button>
+        <a class="btn btn-outline" href="https://wa.me/573137168007?text=Hola%20SISABE%2C%20quiero%20hacer%20un%20pedido" target="_blank" rel="noopener">Pedir por WhatsApp</a>
       </div>
 
+      <!-- Cara del cantante Blesd (3D: arrastra para girarla 360°) -->
       <div class="blesd-card">
         <div class="blesd-glow"></div>
-        <img id="blesdImg" src="assets/images/blesd.jpg" alt="Blesd" class="blesd-img" 
-             onerror="this.style.display='none'; document.getElementById('blesdFallback').style.display='flex';" />
-        <div id="blesdFallback" class="blesd-fallback">
-          <div class="blesd-avatar">B</div>
-          <div class="blesd-name">BLESD</div>
+        <div id="blesd3d" class="blesd-3d">
+          <!-- Imagen de respaldo: se oculta cuando carga el 3D -->
+          <img id="blesdImg" src="assets/images/blesd-face.png" alt="Blesd" class="blesd-img" />
         </div>
         <div class="blesd-label">Artista Invitado · SISABE</div>
+        <div class="blesd-hint">↻ Arrastra para girarla</div>
       </div>
     </div>
 
-    <div class="hero-stats">
-      <div class="stat">
-        <span class="stat-number" id="statProducts">0</span>
-        <span class="stat-label">Productos</span>
-      </div>
-      <div class="stat">
-        <span class="stat-number" id="statStock">0</span>
-        <span class="stat-label">Unidades en Stock</span>
-      </div>
-      <div class="stat">
-        <span class="stat-number" id="statSales">$0</span>
-        <span class="stat-label">Ventas Totales</span>
-      </div>
-    </div>
   </header>
 
-  <!-- CATÁLOGO DIDÁCTICO -->
+  <!-- =========================
+       CATÁLOGO DIDÁCTICO
+       ========================= -->
   <section id="catalogo" class="catalogo">
     <div class="section-header">
       <h2>Catálogo Didáctico</h2>
@@ -102,12 +99,102 @@
       <button class="filter-btn" data-category="cervezas">🍺 Cervezas</button>
     </div>
 
-    <div class="products-grid" id="productsGrid"></div>
-    <div class="empty-state" id="emptyState" style="display:none;">No se encontraron productos en esta categoría.</div>
+    <div class="products-grid" id="productsGrid">
+      <!-- Productos inyectados por JS -->
+    </div>
+
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <p>No se encontraron productos en esta categoría.</p>
+    </div>
   </section>
 
-  <!-- STOCK SIEMPRE VISIBLE -->
-  <section id="stock" class="stock">
+  <!-- =========================
+       PANEL DE ADMINISTRACIÓN (oculto: se abre en /#admin con contraseña)
+       ========================= -->
+  <div id="adminPanel" class="admin-panel" hidden>
+    <div class="admin-bar">
+      <div class="admin-title">🔒 PANEL ADMIN</div>
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="caja">Caja</button>
+        <button class="admin-tab" data-tab="stock">Stock</button>
+        <button class="admin-tab" data-tab="contabilidad">Contabilidad</button>
+        <button class="admin-tab" data-tab="resumen">Resumen</button>
+        <button class="admin-tab" data-tab="cuenta">Cuenta</button>
+      </div>
+      <div class="admin-actions">
+        <button class="btn btn-outline" id="adminClose">Ver tienda</button>
+        <button class="btn btn-primary" id="adminLogout">Salir</button>
+      </div>
+    </div>
+    <div class="admin-body">
+      <section class="admin-caja" data-view="caja">
+        <div class="caja-layout">
+          <div class="caja-productos">
+            <div class="caja-filtros">
+              <input type="text" id="cajaBuscar" placeholder="Buscar producto..." />
+              <div class="caja-cats" id="cajaCats">
+                <button class="caja-cat active" data-cat="todos">Todos</button>
+                <button class="caja-cat" data-cat="vapers">💨 Vapers</button>
+                <button class="caja-cat" data-cat="esencias">🧪 Esencias</button>
+                <button class="caja-cat" data-cat="granizados">🧊 Granizados</button>
+                <button class="caja-cat" data-cat="micheladas">🍋 Micheladas</button>
+                <button class="caja-cat" data-cat="cervezas">🍺 Cervezas</button>
+              </div>
+            </div>
+            <div class="caja-grid" id="cajaGrid"></div>
+          </div>
+
+          <aside class="caja-ticket" id="cajaTicket">
+            <h3>Venta actual</h3>
+            <div class="caja-lineas" id="cajaLineas"></div>
+            <div class="caja-total"><span>TOTAL</span><strong id="cajaTotal">$0</strong></div>
+            <div class="caja-metodos" id="cajaMetodos">
+              <button class="caja-metodo active" data-metodo="Efectivo">Efectivo</button>
+              <button class="caja-metodo" data-metodo="Nequi">Nequi</button>
+              <button class="caja-metodo" data-metodo="Daviplata">Daviplata</button>
+              <button class="caja-metodo" data-metodo="Transferencia">Transferencia</button>
+              <button class="caja-metodo" data-metodo="Tarjeta">Tarjeta</button>
+            </div>
+            <div class="caja-efectivo" id="cajaEfectivo">
+              <label for="cajaRecibido">Recibido</label>
+              <input type="number" id="cajaRecibido" min="0" step="any" placeholder="0" />
+              <div class="caja-cambio">Cambio: <strong id="cajaCambio">$0</strong></div>
+            </div>
+            <button class="btn btn-primary w-full" id="cajaCobrar">Cobrar</button>
+            <button class="caja-link" id="cajaVaciar">Vaciar venta</button>
+            <div class="caja-ultima">
+              <span id="cajaUltima">Aún no hay ventas.</span>
+              <button class="caja-link" id="cajaDeshacer">Deshacer última venta</button>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <button class="caja-flotante" id="cajaIr" hidden>🧾 Ver venta · <strong id="cajaIrTotal">$0</strong></button>
+
+      <section class="admin-resumen" data-view="resumen" hidden>
+        <div class="section-header"><h2>Resumen</h2><p>Vista rápida de tu negocio.</p></div>
+      <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-number" id="statProducts">0</span>
+        <span class="stat-label">Productos</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number" id="statStock">0</span>
+        <span class="stat-label">Unidades en Stock</span>
+      </div>
+      <div class="stat">
+        <span class="stat-number" id="statSales">$0</span>
+        <span class="stat-label">Ventas Hoy</span>
+      </div>
+    </div>
+
+      </section>
+
+  <!-- =========================
+       STOCK SIEMPRE VISIBLE
+       ========================= -->
+  <section id="stock" class="stock" data-view="stock" hidden>
     <div class="section-header">
       <h2>Stock en Tiempo Real</h2>
       <p>Controla el inventario de tu negocio al instante.</p>
@@ -117,7 +204,7 @@
       <input type="text" id="stockSearch" placeholder="Buscar producto..." />
       <select id="stockFilter">
         <option value="todos">Todos los productos</option>
-        <option value="bajo">Stock bajo</option>
+        <option value="bajo">Stock bajo (&lt; 5)</option>
         <option value="disponible">Disponible</option>
         <option value="agotado">Agotado</option>
       </select>
@@ -126,96 +213,188 @@
     <div class="stock-table-wrap">
       <table class="stock-table">
         <thead>
-          <tr><th>Producto</th><th>Categoría</th><th>Stock Actual</th><th>Stock Mínimo</th><th>Estado</th><th>Acción</th></tr>
+          <tr>
+            <th>Producto</th>
+            <th>Categoría</th>
+            <th>Stock Actual</th>
+            <th>Stock Mínimo</th>
+            <th>Estado</th>
+            <th>Acción</th>
+          </tr>
         </thead>
-        <tbody id="stockBody"></tbody>
+        <tbody id="stockBody">
+          <!-- Inyectado por JS -->
+        </tbody>
       </table>
     </div>
 
     <div class="stock-summary">
-      <div class="summary-card total"><span class="label">Total productos</span><span class="value" id="summaryTotal">0</span></div>
-      <div class="summary-card unidades"><span class="label">Unidades totales</span><span class="value" id="summaryUnits">0</span></div>
-      <div class="summary-card bajo"><span class="label">Stock bajo</span><span class="value" id="summaryLow">0</span></div>
-      <div class="summary-card valor"><span class="label">Valor estimado inventario</span><span class="value" id="summaryValue">$0</span></div>
+      <div class="summary-card total">
+        <span class="label">Total productos</span>
+        <span class="value" id="summaryTotal">0</span>
+      </div>
+      <div class="summary-card unidades">
+        <span class="label">Unidades totales</span>
+        <span class="value" id="summaryUnits">0</span>
+      </div>
+      <div class="summary-card bajo">
+        <span class="label">Stock bajo</span>
+        <span class="value" id="summaryLow">0</span>
+      </div>
+      <div class="summary-card valor">
+        <span class="label">Valor estimado inventario</span>
+        <span class="value" id="summaryValue">$0</span>
+      </div>
     </div>
   </section>
 
-  <!-- CONTABILIDAD (Protegida por login) -->
-  <section id="contabilidad" class="contabilidad">
+  <!-- =========================
+       CONTABILIDAD
+       ========================= -->
+  <section id="contabilidad" class="contabilidad" data-view="contabilidad" hidden>
     <div class="section-header">
       <h2>Contabilidad del Negocio</h2>
       <p>Lleva el registro de ventas, ingresos y gastos de SISABE.</p>
     </div>
 
     <div class="accounting-kpis">
-      <div class="kpi-card ingresos"><div class="kpi-label">Ingresos Totales</div><div class="kpi-value" id="kpiIngresos">$0</div><div class="kpi-trend positive">▲ Hoy: $0</div></div>
-      <div class="kpi-card gastos"><div class="kpi-label">Gastos</div><div class="kpi-value" id="kpiGastos">$0</div><div class="kpi-trend negative">▼ Hoy: $0</div></div>
-      <div class="kpi-card utilidad"><div class="kpi-label">Utilidad Neta</div><div class="kpi-value" id="kpiUtilidad">$0</div><div class="kpi-trend positive">Margen: 0%</div></div>
-      <div class="kpi-card transacciones"><div class="kpi-label">Transacciones</div><div class="kpi-value" id="kpiTransacciones">0</div><div class="kpi-trend neutral">Ventas realizadas</div></div>
+      <div class="kpi-card ingresos">
+        <div class="kpi-label">Ingresos Totales</div>
+        <div class="kpi-value" id="kpiIngresos">$0</div>
+        <div class="kpi-trend positive">▲ Hoy: $0</div>
+      </div>
+      <div class="kpi-card gastos">
+        <div class="kpi-label">Gastos</div>
+        <div class="kpi-value" id="kpiGastos">$0</div>
+        <div class="kpi-trend negative">▼ Hoy: $0</div>
+      </div>
+      <div class="kpi-card utilidad">
+        <div class="kpi-label">Utilidad Neta</div>
+        <div class="kpi-value" id="kpiUtilidad">$0</div>
+        <div class="kpi-trend positive">Margen: 0%</div>
+      </div>
+      <div class="kpi-card transacciones">
+        <div class="kpi-label">Transacciones</div>
+        <div class="kpi-value" id="kpiTransacciones">0</div>
+        <div class="kpi-trend neutral">Ventas realizadas</div>
+      </div>
     </div>
 
-    <div class="accounting-tools">
-      <div class="tool-panel registro-venta">
-        <h3>Registrar Venta</h3>
-        <div class="form-row"><label>Producto</label><select id="ventaProducto"></select></div>
-        <div class="form-row"><label>Cantidad (ml si es esencia)</label><input type="number" id="ventaCantidad" min="1" value="1" /></div>
-        <div class="form-row"><label>Precio de venta</label><input type="number" id="ventaPrecio" min="0" step="0.01" placeholder="0.00" /></div>
-        <div class="form-row"><label>Método de pago</label><select id="ventaMetodo"><option>Efectivo</option><option>Tarjeta</option><option>Transferencia</option></select></div>
-        <button class="btn btn-primary w-full" id="btnRegistrarVenta">Registrar Venta</button>
-      </div>
-
+    <div class="accounting-tools single">
       <div class="tool-panel registro-gasto">
         <h3>Registrar Gasto</h3>
-        <div class="form-row"><label>Concepto</label><input type="text" id="gastoConcepto" placeholder="Ej: Compra de insumos" /></div>
-        <div class="form-row"><label>Monto</label><input type="number" id="gastoMonto" min="0" step="0.01" placeholder="0.00" /></div>
-        <div class="form-row"><label>Categoría</label><select id="gastoCategoria"><option>Insumos</option><option>Servicios</option><option>Marketing</option><option>Otros</option></select></div>
+        <div class="form-row">
+          <label>Concepto</label>
+          <input type="text" id="gastoConcepto" placeholder="Ej: Compra de insumos" />
+        </div>
+        <div class="form-row">
+          <label>Monto</label>
+          <input type="number" id="gastoMonto" min="0" step="0.01" placeholder="0.00" />
+        </div>
+        <div class="form-row">
+          <label>Categoría</label>
+          <select id="gastoCategoria">
+            <option>Insumos</option>
+            <option>Servicios</option>
+            <option>Marketing</option>
+            <option>Otros</option>
+          </select>
+        </div>
         <button class="btn btn-outline w-full" id="btnRegistrarGasto">Registrar Gasto</button>
       </div>
-    </div>
-
-    <!-- CIERRE DE CAJA -->
-    <div class="tool-panel cierre-caja">
-      <h3>🔒 Cierre de Caja</h3>
-      <div class="form-row"><label>Efectivo inicial del día</label><input type="number" id="cierreInicial" min="0" step="0.01" placeholder="0.00" /></div>
-      <div class="form-row"><label>Efectivo final contado</label><input type="number" id="cierreFinal" min="0" step="0.01" placeholder="0.00" /></div>
-      <div class="form-row"><label>Total ventas registradas</label><input type="number" id="cierreVentas" min="0" step="0.01" placeholder="0.00" readonly /></div>
-      <div class="form-row"><label>Diferencia (sobrante/faltante)</label><input type="number" id="cierreDiferencia" step="0.01" placeholder="0.00" readonly /></div>
-      <button class="btn btn-primary w-full" id="btnCerrarCaja">Cerrar Caja del Día</button>
     </div>
 
     <div class="historial-ventas">
       <h3>Historial Reciente</h3>
       <table class="historial-table">
-        <thead><tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Total</th><th>Método</th></tr></thead>
-        <tbody id="historialBody"></tbody>
+        <thead>
+          <tr><th>Fecha</th><th>Producto</th><th>Cantidad</th><th>Total</th><th>Método</th></tr>
+        </thead>
+        <tbody id="historialBody">
+          <!-- Inyectado por JS -->
+        </tbody>
       </table>
     </div>
 
-    <div class="historial-cierres">
+    <!-- CIERRE DE CAJA -->
+    <div class="accounting-tools single" style="margin-top:2rem;">
+      <div class="tool-panel cierre-caja">
+        <h3>🔒 Cierre de Caja</h3>
+        <div class="form-row">
+          <label>Efectivo inicial del día</label>
+          <input type="number" id="cierreInicial" min="0" step="0.01" placeholder="0.00" />
+        </div>
+        <div class="form-row">
+          <label>Efectivo final contado</label>
+          <input type="number" id="cierreFinal" min="0" step="0.01" placeholder="0.00" />
+        </div>
+        <div class="form-row">
+          <label>Total ventas registradas</label>
+          <input type="number" id="cierreVentas" min="0" step="0.01" placeholder="0.00" readonly />
+        </div>
+        <div class="form-row">
+          <label>Diferencia (sobrante/faltante)</label>
+          <input type="number" id="cierreDiferencia" step="0.01" placeholder="0.00" readonly />
+        </div>
+        <button class="btn btn-primary w-full" id="btnCerrarCaja">Cerrar Caja del Día</button>
+      </div>
+    </div>
+
+    <div class="historial-ventas" style="margin-top:2rem;">
       <h3>Historial de Cierres de Caja</h3>
       <table class="historial-table">
-        <thead><tr><th>Fecha</th><th>Efectivo Inicial</th><th>Efectivo Final</th><th>Ventas</th><th>Diferencia</th></tr></thead>
-        <tbody id="cierresBody"></tbody>
+        <thead>
+          <tr><th>Fecha</th><th>Efectivo Inicial</th><th>Efectivo Final</th><th>Ventas</th><th>Diferencia</th></tr>
+        </thead>
+        <tbody id="cierresBody">
+          <!-- Inyectado por JS -->
+        </tbody>
       </table>
     </div>
   </section>
 
-  <!-- CARRITO LATERAL -->
-  <div class="cart-sidebar" id="cartSidebar">
-    <div class="cart-header"><h3>🛒 Tu Carrito</h3><button class="btn-close" id="btnCloseCart" aria-label="Cerrar carrito">✕</button></div>
-    <div class="cart-items" id="cartItems"></div>
-    <div class="cart-footer">
-      <div class="cart-totals">
-        <div><span>Subtotal</span><span id="cartSubtotal">$0</span></div>
-        <div><span>Envío</span><span id="cartShipping">Gratis</span></div>
-        <div class="total"><span>TOTAL</span><span id="cartTotal">$0</span></div>
-      </div>
-      <button class="btn btn-primary w-full" id="btnCheckout">Finalizar Compra</button>
+      <section class="admin-cuenta" data-view="cuenta" hidden>
+        <div class="section-header"><h2>Cuenta</h2><p>Quién puede entrar a este panel.</p></div>
+        <div class="accounting-tools">
+          <div class="tool-panel">
+            <h3>Usuarios</h3>
+            <ul class="cuenta-lista" id="cuentaLista"></ul>
+          </div>
+          <form class="tool-panel" id="cuentaAgregar" autocomplete="off">
+            <h3>Agregar usuario</h3>
+            <div class="form-row"><label>Usuario</label><input type="text" id="cuentaNuevoUser" required /></div>
+            <div class="form-row"><label>Contraseña (mínimo 6)</label><input type="password" id="cuentaNuevoPass" autocomplete="new-password" required /></div>
+            <button type="submit" class="btn btn-outline w-full">Agregar</button>
+          </form>
+          <form class="tool-panel" id="cuentaCambiar" autocomplete="off">
+            <h3>Cambiar mi contraseña</h3>
+            <div class="form-row"><label>Contraseña nueva (mínimo 6)</label><input type="password" id="cuentaPass1" autocomplete="new-password" required /></div>
+            <div class="form-row"><label>Repítela</label><input type="password" id="cuentaPass2" autocomplete="new-password" required /></div>
+            <button type="submit" class="btn btn-outline w-full">Guardar</button>
+          </form>
+        </div>
+        <p class="admin-note" id="cuentaMsg"></p>
+        <p class="admin-note">Los usuarios, el stock y las ventas se guardan solo en este dispositivo y navegador.</p>
+      </section>
     </div>
   </div>
-  <div class="cart-overlay" id="cartOverlay" onclick="app.closeCart()"></div>
 
-  <!-- MODAL DETALLE PRODUCTO -->
+  <div id="adminLogin" class="admin-login" hidden>
+    <form id="adminForm" class="admin-login-box" autocomplete="on">
+      <h3 id="adminTitle">Acceso administrador</h3>
+      <p id="adminHelp" class="admin-help"></p>
+      <input type="text" id="adminUser" placeholder="Usuario" autocomplete="username" required />
+      <input type="password" id="adminPass" placeholder="Contraseña" autocomplete="current-password" required />
+      <input type="password" id="adminPass2" placeholder="Repite la contraseña" autocomplete="new-password" hidden />
+      <div id="adminError" class="admin-error" role="alert"></div>
+      <button type="submit" id="adminSubmit" class="btn btn-primary w-full">Entrar</button>
+      <button type="button" id="adminCancel" class="admin-cancel">Cancelar</button>
+    </form>
+  </div>
+
+  <!-- =========================
+       MODAL DETALLE PRODUCTO
+       ========================= -->
   <div class="modal" id="productModal">
     <div class="modal-content">
       <button class="modal-close" id="btnCloseModal" aria-label="Cerrar">✕</button>
@@ -228,71 +407,48 @@
           <div class="modal-price" id="modalPrice">$0</div>
           <div class="modal-stock" id="modalStock">Stock: 0</div>
           <div class="modal-actions">
-            <label id="modalQtyLabel">Cantidad</label>
-            <input type="number" id="modalQty" min="1" max="99" value="1" />
-            <button class="btn btn-primary w-full" id="btnAddModal">Agregar al Carrito</button>
+            <a class="btn btn-primary w-full" id="modalWa" href="#" target="_blank" rel="noopener">Pedir por WhatsApp</a>
           </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL LOGIN / REGISTRO -->
-  <div class="modal" id="authModal">
-    <div class="modal-content auth-modal">
-      <button class="modal-close" id="btnCloseAuth" aria-label="Cerrar">✕</button>
-      <div class="modal-body">
-        <div class="auth-tabs">
-          <button class="auth-tab active" onclick="app.switchAuthTab('login')">Iniciar Sesión</button>
-          <button class="auth-tab" onclick="app.switchAuthTab('registro')">Registrarse</button>
-        </div>
-
-        <div id="auth-login" class="auth-panel active">
-          <h3>Bienvenido de nuevo</h3>
-          <div class="form-row"><label>Usuario o Email</label><input type="text" id="loginUser" placeholder="admin" /></div>
-          <div class="form-row"><label>Contraseña</label><input type="password" id="loginPass" placeholder="123456" /></div>
-          <button class="btn btn-primary w-full" onclick="app.login()">Iniciar Sesión</button>
-          <p class="auth-hint">Usuario: admin | Contraseña: 123456</p>
-        </div>
-
-        <div id="auth-registro" class="auth-panel">
-          <h3>Crear cuenta de cliente</h3>
-          <div class="form-row"><label>Nombre</label><input type="text" id="regName" placeholder="Juan Pérez" /></div>
-          <div class="form-row"><label>Email</label><input type="email" id="regEmail" placeholder="juan@email.com" /></div>
-          <div class="form-row"><label>Contraseña</label><input type="password" id="regPass" placeholder="Mínimo 6 caracteres" /></div>
-          <button class="btn btn-primary w-full" onclick="app.register()">Registrarse</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- FOOTER -->
+  <!-- =========================
+       FOOTER
+       ========================= -->
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-brand">
         <div class="logo-mark">S</div>
         <div class="logo-text">SISABE</div>
         <p>Vapers • Granizados • Micheladas • Cervezas</p>
-        <div class="socials"><a href="#" aria-label="Instagram">📸</a><a href="#" aria-label="TikTok">⚡</a><a href="#" aria-label="WhatsApp">💬</a></div>
+        <div class="socials">
+          <a href="#" aria-label="Instagram">📸</a>
+          <a href="#" aria-label="TikTok">⚡</a>
+          <a href="https://wa.me/573137168007" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+        </div>
       </div>
-      <div class="footer-links"><h4>Enlaces</h4><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="#stock">Stock</a><a href="#contabilidad">Contabilidad</a></div>
+      <div class="footer-links">
+        <h4>Enlaces</h4>
+        <a href="#inicio">Inicio</a>
+        <a href="#catalogo">Catálogo</a>
+      </div>
       <div class="footer-contact">
         <h4>Contacto</h4>
-        <p>📍 Tu ciudad, México</p>
-        <p>📞 WhatsApp: +52 1 000 000 0000</p>
+        <p>📍 Montería / Principal de Nueva Esperanza</p>
+        <p>📞 WhatsApp: <a href="https://wa.me/573137168007" target="_blank" rel="noopener">313 716 8007</a></p>
         <p>✉️ contacto@sisabe.com</p>
       </div>
     </div>
-    <div class="footer-bottom"><p>© 2026 SISABE. Hecho con ⚡ para ser el mejor de todos.</p></div>
+    <div class="footer-bottom">
+      <p>© 2026 SISABE. Hecho con ⚡ para ser el mejor de todos. <a href="#admin" class="footer-admin">Admin</a></p>
+    </div>
   </footer>
 
   <script type="module" src="js/app.js"></script>
+  <script type="module" src="js/caja.js"></script>
+  <script type="module" src="js/admin.js"></script>
+  <script src="js/blesd3d.js" defer></script>
 </body>
 </html>
-```
-
-Ahora actualizo el `app.js` con la lógica de cierre de caja y manejo de ml para esencias.<|end|><|start|>start<|channel|>analysis <|constrain|>xml<|message|><rfl:parameter name="code">
-// Leer el app.js actual para entender la estructura
-const fs = require('fs');
-const app = fs.readFileSync('C:/Users/mi pc/Downloads/SISABE/js/app.js', 'utf8');
-console.log(app.length);
