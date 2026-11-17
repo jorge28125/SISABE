@@ -169,5 +169,12 @@ document.querySelectorAll('.admin-tab').forEach((b) => b.addEventListener('click
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && (!panel.hidden || !login.hidden)) closeAll(); });
 window.addEventListener('hashchange', route);
 // Esperar a que la tienda (app.js) termine de iniciar antes de abrir el panel
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', route);
-else route();
+function waitForApp() {
+  if (window.app) {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', route);
+    else route();
+  } else {
+    setTimeout(waitForApp, 50);
+  }
+}
+waitForApp();
