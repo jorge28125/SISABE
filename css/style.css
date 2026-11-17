@@ -198,6 +198,12 @@ button { cursor: pointer; font-family: inherit; border: none; background: none; 
   box-shadow: var(--sombra-azul);
 }
 
+#adminNavBtn {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: var(--amarillo);
+}
+
 .hamburger {
   display: none;
   font-size: 1.5rem;
@@ -1414,7 +1420,7 @@ a.btn { display: inline-block; }
 .admin-error { min-height: 1.2em; color: var(--rojo); font-size: 0.9rem; text-align: center; }
 .admin-cancel { color: var(--gris); font-size: 0.9rem; }
 .admin-cancel:hover { color: var(--blanco); }
-.footer-admin { margin-left: 0.75rem; opacity: 0.35; font-size: 0.8rem; }
+.footer-admin { margin-left: 0.75rem; opacity: 0.7; font-size: 0.9rem; color: var(--azul); font-weight: 700; }
 .footer-admin:hover { opacity: 1; color: var(--azul); }
 
 /* =========================================
